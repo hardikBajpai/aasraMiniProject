@@ -1,0 +1,14 @@
+{
+  "name": "aasra-ngo-portal",
+  "version": "1.0.0",
+  "description": "AASRA - NGO Marketplace Portal",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "create-test-ngo": "node createTestNGO.js"
+  },
+  "keywords": ["ngo", "complaint", "portal", "marketplace"],
+  "author": "",
+  "license": "ISC"
+}

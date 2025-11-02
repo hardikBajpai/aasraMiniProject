@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGO Dashboard - AASRA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <div class="logo-icon">A</div>
+                <span>AASRA</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/ngo/logout">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 12px; color: white; margin-bottom: 2rem;">
+            <h1 style="margin: 0; color: white;">NGO Dashboard</h1>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Welcome, <strong><%= ngoName %></strong>!</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card" style="background: white; padding: 1.5rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #3b82f6;">
+                <h3 id="total" style="font-size: 2rem; color: #3b82f6; margin: 0;">0</h3>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Total Problems</p>
+            </div>
+            <div class="stat-card" style="background: white; padding: 1.5rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #10b981;">
+                <h3 id="open" style="font-size: 2rem; color: #10b981; margin: 0;">0</h3>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Available</p>
+            </div>
+            <div class="stat-card" style="background: white; padding: 1.5rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #f59e0b;">
+                <h3 id="claimed" style="font-size: 2rem; color: #f59e0b; margin: 0;">0</h3>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Your Active</p>
+            </div>
+            <div class="stat-card" style="background: white; padding: 1.5rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #8b5cf6;">
+                <h3 id="resolved" style="font-size: 2rem; color: #8b5cf6; margin: 0;">0</h3>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">Resolved</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 1.5rem;">Community Problems</h3>
+            <div id="list"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 AASRA. All rights reserved.</p>
+    </footer>
+
+    <script>
+        var currentNGO = '<%= ngoName %>';
+        console.log('Current NGO:', currentNGO);
+
+        window.onload = function() {
+            console.log('Page loaded, fetching data...');
+            loadData();
+        };
+
+        function loadData() {
+            fetch('/api/complaints')
+                .then(function(r) { 
+                    console.log('Fetch response received');
+                    return r.json(); 
+                })
+                .then(function(data) {
+                    console.log('Total complaints:', data.length);
+                    console.log('Full data:', data);
+                    
+                    // Update stats
+                    document.getElementById('total').textContent = data.length;
+                    
+                    var open = 0, claimed = 0, resolved = 0;
+                    for (var i = 0; i < data.length; i++) {
+                        console.log('Complaint', i, '- Name:', data[i].name, ', Status:', data[i].status, ', AssignedTo:', data[i].assignedNGOName);
+                        
+                        if (data[i].status === 'Open') open++;
+                        if (data[i].assignedNGOName === currentNGO && data[i].status === 'In Progress') claimed++;
+                        if (data[i].assignedNGOName === currentNGO && data[i].status === 'Resolved') resolved++;
+                    }
+                    
+                    console.log('Stats - Open:', open, ', Claimed:', claimed, ', Resolved:', resolved);
+                    
+                    document.getElementById('open').textContent = open;
+                    document.getElementById('claimed').textContent = claimed;
+                    document.getElementById('resolved').textContent = resolved;
+                    
+                    showList(data);
+                })
+                .catch(function(e) {
+                    console.error('Error loading data:', e);
+                    document.getElementById('list').innerHTML = '<p style="color:red;text-align:center;padding:2rem;">Error loading data</p>';
+                });
+        }
+
+        function showList(data) {
+            console.log('showList called with', data.length, 'items');
+            var html = '';
+            
+            for (var i = 0; i < data.length; i++) {
+                var c = data[i];
+                console.log('Processing complaint:', c.name, '- Status:', c.status);
+                
+                var date = new Date(c.createdAt).toLocaleDateString();
+                
+                var color = '#10b981';
+var statusText = 'Available';
+if (c.status === 'In Progress') { 
+    color = '#f59e0b'; 
+    statusText = 'In Progress'; 
+}
+if (c.status === 'Resolved') { 
+    color = '#8b5cf6'; 
+    statusText = 'Resolved'; 
+}
+if (c.status === 'Pending') {
+    color = '#10b981';
+    statusText = 'Available';
+}
+                
+                html += '<div style="background:white;padding:1.5rem;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.08);border-left:4px solid '+color+';margin-bottom:1rem;">';
+                
+                html += '<div style="display:flex;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:1rem;">';
+                html += '<div>';
+                html += '<h3 style="margin:0 0 0.5rem 0;">'+(c.name || 'Anonymous')+'</h3>';
+                html += '<p style="margin:0.2rem 0;font-size:0.9rem;">📧 '+(c.email || 'N/A')+'</p>';
+                html += '<p style="margin:0.2rem 0;font-size:0.9rem;">📱 '+(c.phone || 'N/A')+'</p>';
+                html += '<p style="margin:0.2rem 0;font-size:0.9rem;">📍 '+(c.location || 'Not specified')+'</p>';
+                html += '<p style="margin:0.2rem 0;font-size:0.85rem;color:#6b7280;">'+date+'</p>';
+                html += '</div>';
+                html += '<div style="text-align:right;"><span style="padding:0.5rem 1rem;background:'+color+'20;color:'+color+';border-radius:20px;font-size:0.85rem;font-weight:600;">'+statusText+'</span>';
+                if (c.assignedNGOName) html += '<p style="font-size:0.8rem;margin-top:0.5rem;color:#6b7280;">By: '+c.assignedNGOName+'</p>';
+                html += '</div></div>';
+                
+                html += '<span style="display:inline-block;padding:0.4rem 0.9rem;background:#3b3b9815;border-radius:6px;font-size:0.85rem;color:#3b3b98;margin-bottom:0.8rem;">'+(c.category || 'Other')+'</span>';
+                html += '<p style="margin:0.8rem 0;line-height:1.6;">'+(c.description || 'No description')+'</p>';
+                
+                // CHECK STATUS AND LOG
+                var isOpen = (c.status === 'Open' || c.status === 'Pending');
+
+                var isMine = (c.assignedNGOName === currentNGO);
+                var isInProgress = (c.status === 'In Progress');
+                var isResolved = (c.status === 'Resolved');
+                
+                console.log('Complaint:', c.name, '| isOpen:', isOpen, '| isMine:', isMine, '| status:', c.status);
+                
+                // BUTTONS
+                html += '<div style="margin-top:1.2rem;display:flex;gap:0.8rem;flex-wrap:wrap;">';
+                
+                if (isOpen) {
+                    console.log('  -> Adding CLAIM button for:', c.name);
+                    html += '<button onclick="claim(\''+c._id+'\')" class="btn btn-primary" style="padding:0.7rem 1.5rem;">🤝 Claim & Help</button>';
+                }
+                
+                if (isMine && isInProgress) {
+                    console.log('  -> Adding RESOLVE button for:', c.name);
+                    html += '<button onclick="resolve(\''+c._id+'\')" style="background:#10b981;color:white;padding:0.7rem 1.5rem;border:none;border-radius:8px;cursor:pointer;font-weight:500;">✅ Mark Resolved</button>';
+                }
+                
+                if (isMine && isResolved) {
+                    console.log('  -> Adding DELETE button for:', c.name);
+                    html += '<button onclick="del(\''+c._id+'\')" style="background:#ef4444;color:white;padding:0.7rem 1.5rem;border:none;border-radius:8px;cursor:pointer;font-weight:500;">🗑️ Delete</button>';
+                }
+                
+                html += '</div>';
+                html += '</div>';
+            }
+            
+            if (data.length === 0) {
+                html = '<p style="text-align:center;padding:2rem;color:#6b7280;">No problems found</p>';
+            }
+            
+            console.log('Setting innerHTML with', html.length, 'characters');
+            document.getElementById('list').innerHTML = html;
+            console.log('Display complete');
+        }
+
+        function claim(id) {
+    console.log('=== CLAIM STARTED ===');
+    console.log('Claiming complaint ID:', id);
+    console.log('Current NGO:', currentNGO);
+    
+    if (!confirm('Claim this problem?')) {
+        console.log('Claim cancelled by user');
+        return;
+    }
+    
+    console.log('Sending claim request...');
+    
+    fetch('/ngo/claim/'+id, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'}
+    })
+    .then(function(r){
+        console.log('Response received, status:', r.status);
+        return r.json();
+    })
+    .then(function(d){
+        console.log('Response data:', d);
+        if (d.error) {
+            console.error('Claim failed:', d.error);
+            alert('Error: ' + d.error);
+        } else {
+            console.log('Claim successful!');
+            alert(d.message || 'Claimed!');
+            console.log('Reloading data...');
+            loadData();
+        }
+    })
+    .catch(function(e){
+        console.error('Claim request failed:', e);
+        alert('Error claiming problem');
+    });
+}
+
+
+        function resolve(id) {
+            console.log('Resolving:', id);
+            if (!confirm('Mark as resolved?')) return;
+            fetch('/api/complaints/'+id+'/status',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'Resolved'})})
+                .then(function(r){return r.json();})
+                .then(function(){alert('Resolved!');loadData();})
+                .catch(function(e){console.error('Resolve error:', e);alert('Error');});
+        }
+
+        function del(id) {
+            console.log('Deleting:', id);
+            if (!confirm('Delete this complaint? Cannot be undone!')) return;
+            fetch('/api/complaints/'+id,{method:'DELETE'})
+                .then(function(r){return r.json();})
+                .then(function(){alert('Deleted!');loadData();})
+                .catch(function(e){console.error('Delete error:', e);alert('Error');});
+        }
+    </script>
+</body>
+</html>

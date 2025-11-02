@@ -1,0 +1,112 @@
+<%- include('partials/header') %>
+
+<div class="hero">
+    <h1>Register Your NGO</h1>
+    <p>Join AASRA to help people and make a difference in your community</p>
+</div>
+
+<div class="container">
+    <div class="login-container" style="max-width: 600px; margin: 0 auto;">
+        <% if (error) { %>
+            <div class="alert alert-error show">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <% if (success) { %>
+            <div class="alert alert-success show">
+                <%= success %> <a href="/ngo/login">Click here to login</a>
+            </div>
+        <% } %>
+
+        <div class="card">
+            <h2>NGO Registration</h2>
+            <form action="/ngo/register" method="POST">
+                <div class="form-group">
+                    <label for="ngoName">NGO Name *</label>
+                    <input type="text" id="ngoName" name="ngoName" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" name="username" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" class="form-control" required minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label>Categories You Handle * (Select multiple)</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="category" value="Education">
+                            <span>Education</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="category" value="Healthcare">
+                            <span>Healthcare</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="category" value="Housing">
+                            <span>Housing</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="category" value="Employment">
+                            <span>Employment</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="category" value="Legal Aid">
+                            <span>Legal Aid</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="category" value="Food & Nutrition">
+                            <span>Food & Nutrition</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="category" value="Women Safety">
+                            <span>Women Safety</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="category" value="Child Welfare">
+                            <span>Child Welfare</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" name="category" value="Other">
+                            <span>Other</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location/City *</label>
+                    <input type="text" id="location" name="location" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">About Your NGO</label>
+                    <textarea id="description" name="description" class="form-control" placeholder="Tell us about your organization and mission..."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Register NGO</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 20px; color: var(--text);">
+                Already have an account? <a href="/ngo/login" style="color: var(--primary); font-weight: 500;">Login here</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

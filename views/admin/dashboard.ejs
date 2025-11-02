@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+</head>
+<body>
+<h1>Welcome, <%= adminUsername %></h1>
+<a href="/admin/logout">Logout</a>
+
+<h2>Complaints</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+<thead>
+<tr>
+  <th>Name</th><th>Category</th><th>Status</th><th>Assigned NGO</th><th>Actions</th>
+</tr>
+</thead>
+<tbody>
+  <% complaints.forEach(c => { %>
+    <tr>
+      <td><%= c.name %></td>
+      <td><%= c.category %></td>
+      <td>
+        <form class="statusForm" data-id="<%= c._id %>">
+          <select name="status">
+            <option value="Open" <%= c.status === 'Open' ? 'selected' : '' %>>Open</option>
+            <option value="In Progress" <%= c.status === 'In Progress' ? 'selected' : '' %>>In Progress</option>
+            <option value="Resolved" <%= c.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
+          </select>
+        </form>
+      </td>
+      <td>
+        <form class="assignForm" data-id="<%= c._id %>">
+          <select name="assignedTo">
+            <option value="">--None--</option>
+            <% ngos.forEach(ngo => { %>
+              <option value="<%= ngo._id %>" <%= c.assignedTo && c.assignedTo.equals(ngo._id) ? 'selected' : '' %>><%= ngo.ngoName %></option>
+            <% }) %>
+          </select>
+        </form>
+      </td>
+      <td>
+        <button class="deleteBtn" data-id="<%= c._id %>">Delete</button>
+      </td>
+    </tr>
+  <% }) %>
+</tbody>
+</table>
+
+<script>
+document.querySelectorAll('.statusForm').forEach(form => {
+  form.addEventListener('change', async () => {
+    const id = form.dataset.id;
+    const status = form.status.value;
+    const assignedTo = form.closest('tr').querySelector('.assignForm select').value || null;
+    const res = await fetch(`/admin/complaints/${id}/status`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({status, assignedTo})
+    });
+    if (res.ok) alert('Status updated');
+  });
+});
+
+document.querySelectorAll('.assignForm').forEach(form => {
+  form.addEventListener('change', async () => {
+    const id = form.dataset.id;
+    const assignedTo = form.assignedTo.value;
+    const status = form.closest('tr').querySelector('.statusForm select').value;
+    const res = await fetch(`/admin/complaints/${id}/status`, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({status, assignedTo})
+    });
+    if (res.ok) alert('NGO assigned');
+  });
+});
+
+document.querySelectorAll('.deleteBtn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    if(!confirm('Are you sure to delete this complaint?')) return;
+    const id = btn.dataset.id;
+    const res = await fetch(`/admin/complaints/${id}`, {method: 'DELETE'});
+    if (res.ok) {
+      alert('Deleted');
+      btn.closest('tr').remove();
+    }
+  });
+});
+</script>
+
+</body>
+</html>
