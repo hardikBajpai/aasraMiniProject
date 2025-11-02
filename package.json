@@ -1,14 +1,17 @@
 {
-  "name": "aasra-ngo-portal",
+  "name": "aasra",
   "version": "1.0.0",
-  "description": "AASRA - NGO Marketplace Portal",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "create-test-ngo": "node createTestNGO.js"
+    "start": "node app.js"
   },
-  "keywords": ["ngo", "complaint", "portal", "marketplace"],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.6.1",
+    "ejs": "^3.1.9",
+    "dotenv": "^16.4.5",
+    "body-parser": "^1.20.2",
+    "method-override": "^3.0.0",
+    "express-session": "^1.17.3"
+  }
 }
