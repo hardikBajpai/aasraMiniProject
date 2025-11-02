@@ -56,11 +56,14 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something went wrong!');
 });
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server is running on http://localhost:${PORT}`);
-    console.log(`📝 Submit problems at http://localhost:${PORT}`);
-    console.log(`🏢 NGO Registration at http://localhost:${PORT}/ngo/register`);
-    console.log(`🔐 NGO Login at http://localhost:${PORT}/ngo/login`);
-});
+// Run only locally
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running at http://localhost:${PORT}`);
+    });
+}
+
+// Export the app for Vercel
+module.exports = app;
+
